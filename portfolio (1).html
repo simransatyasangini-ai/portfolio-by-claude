@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Architect — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2eb;
+    --accent: #ff4d1c;
+    --accent2: #00e5c0;
+    --dim: #1a1a1a;
+    --muted: #555;
+    --border: rgba(245,242,235,0.1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed; width: 12px; height: 12px;
+    background: var(--accent); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1px solid var(--accent); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: transform 0.18s ease, width 0.25s, height 0.25s;
+  }
+
+  /* Noise overlay */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9997; opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.5rem 3rem;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    background: rgba(10,10,10,0.7);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 12px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -3px; left: 0;
+    width: 0; height: 1px; background: var(--accent);
+    transition: width 0.3s;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 8rem 3rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 60% at 80% 50%, rgba(255,77,28,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(0,229,192,0.05) 0%, transparent 60%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(245,242,235,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,242,235,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-left { position: relative; z-index: 1; }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 2rem;
+    border: 1px solid var(--accent); padding: 4px 14px; border-radius: 2px;
+  }
+  .hero-tag::before { content: '▶'; font-size: 8px; }
+  h1 {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    line-height: 1; letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+  }
+  h1 em {
+    font-style: normal; color: transparent;
+    -webkit-text-stroke: 1px var(--white);
+  }
+  h1 .accent { color: var(--accent); }
+  .hero-desc {
+    font-size: 14px; color: var(--muted); max-width: 400px;
+    line-height: 1.9; margin-bottom: 2.5rem;
+  }
+  .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent); color: var(--black);
+    padding: 0.8rem 2rem; font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 13px; letter-spacing: 0.1em;
+    text-transform: uppercase; text-decoration: none;
+    border: none; cursor: none; transition: transform 0.2s, box-shadow 0.2s;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,77,28,0.35); }
+  .btn-ghost {
+    border: 1px solid var(--border); color: var(--white);
+    padding: 0.8rem 2rem; font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 13px; letter-spacing: 0.1em;
+    text-transform: uppercase; text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  .hero-right {
+    position: relative; z-index: 1;
+    display: flex; justify-content: center; align-items: center;
+  }
+  .hero-visual {
+    width: 340px; height: 340px; position: relative;
+  }
+  .orb {
+    position: absolute; border-radius: 50%;
+    animation: pulse 4s ease-in-out infinite;
+  }
+  .orb-1 {
+    width: 200px; height: 200px; top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    background: radial-gradient(circle at 35% 35%, #ff4d1c, #8b0000);
+    animation-delay: 0s;
+  }
+  .orb-2 {
+    width: 140px; height: 140px; top: 10%; left: 55%;
+    background: radial-gradient(circle at 40% 40%, #00e5c0, #005548);
+    opacity: 0.7; animation-delay: 1.5s;
+  }
+  .orb-3 {
+    width: 80px; height: 80px; bottom: 15%; left: 10%;
+    background: radial-gradient(circle at 40% 40%, #f5f2eb, #555);
+    opacity: 0.4; animation-delay: 0.8s;
+  }
+  @keyframes pulse {
+    0%,100% { transform: translate(-50%,-50%) scale(1); }
+    50% { transform: translate(-50%,-50%) scale(1.07); }
+  }
+  .orb-2 { animation: float1 5s ease-in-out infinite; }
+  .orb-3 { animation: float2 6s ease-in-out infinite; }
+  @keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-12px,16px)} }
+  @keyframes float2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(10px,-10px)} }
+
+  .hero-stats {
+    position: absolute; bottom: 3rem; left: 3rem; right: 3rem;
+    display: flex; gap: 3rem; z-index: 1;
+    border-top: 1px solid var(--border); padding-top: 2rem;
+  }
+  .stat { }
+  .stat-num {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2rem;
+    color: var(--white); line-height: 1;
+  }
+  .stat-num span { color: var(--accent); }
+  .stat-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+  /* MARQUEE */
+  .marquee-wrap {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden; padding: 1rem 0; background: var(--dim);
+  }
+  .marquee-track {
+    display: flex; gap: 0;
+    animation: marquee 22s linear infinite;
+    white-space: nowrap;
+  }
+  .marquee-item {
+    padding: 0 2.5rem; font-size: 11px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--muted);
+    flex-shrink: 0;
+  }
+  .marquee-item span { color: var(--accent); margin-right: 1rem; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* SECTIONS */
+  section { padding: 7rem 3rem; max-width: 1200px; margin: 0 auto; }
+  .section-label {
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::before { content: ''; display: block; width: 32px; height: 1px; background: var(--accent); }
+  h2 {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.1;
+    letter-spacing: -0.02em; margin-bottom: 3rem;
+  }
+
+  /* ABOUT */
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+  .about-body { font-size: 15px; line-height: 1.9; color: rgba(245,242,235,0.75); }
+  .about-body p + p { margin-top: 1rem; }
+  .about-stack { }
+  .stack-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .stack-items { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 5px 12px; border: 1px solid var(--border);
+    color: var(--muted); transition: all 0.2s;
+  }
+  .tag:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  /* PROJECTS */
+  .projects-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); }
+  .project-card {
+    background: var(--black); padding: 2.5rem;
+    position: relative; overflow: hidden;
+    transition: background 0.3s;
+  }
+  .project-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.4s;
+  }
+  .project-card:hover { background: var(--dim); }
+  .project-card:hover::before { transform: scaleX(1); }
+  .project-num {
+    font-family: 'Syne', sans-serif; font-size: 0.75rem;
+    font-weight: 800; color: var(--muted); margin-bottom: 1.5rem;
+    letter-spacing: 0.1em;
+  }
+  .project-name {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 1.4rem; margin-bottom: 0.75rem; line-height: 1.2;
+  }
+  .project-desc { font-size: 13px; color: var(--muted); line-height: 1.8; margin-bottom: 1.5rem; }
+  .project-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .project-tag {
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 1px;
+    background: rgba(255,77,28,0.1); color: var(--accent);
+    border: 1px solid rgba(255,77,28,0.2);
+  }
+  .project-card.featured {
+    grid-column: span 2;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;
+  }
+  .featured-badge {
+    font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--accent2); margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .featured-badge::before { content: '★'; }
+
+  /* SERVICES */
+  .services-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); }
+  .service {
+    background: var(--black); padding: 2rem;
+    transition: background 0.25s;
+  }
+  .service:hover { background: var(--dim); }
+  .service-icon {
+    font-size: 1.5rem; margin-bottom: 1.2rem;
+    width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border);
+  }
+  .service-name {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem;
+    margin-bottom: 0.6rem;
+  }
+  .service-desc { font-size: 13px; color: var(--muted); line-height: 1.8; }
+
+  /* CONTACT */
+  .contact-wrap {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 4rem; align-items: start;
+  }
+  .contact-left h2 { margin-bottom: 1rem; }
+  .contact-sub { font-size: 14px; color: var(--muted); line-height: 1.9; max-width: 400px; }
+  .contact-links { margin-top: 2rem; display: flex; flex-direction: column; gap: 0.75rem; }
+  .contact-link {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 13px; color: var(--muted); text-decoration: none;
+    transition: color 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .contact-link:hover { color: var(--accent2); }
+  .contact-link::before { content: '→'; color: var(--accent); }
+  .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .form-input, .form-textarea {
+    background: var(--dim); border: 1px solid var(--border);
+    color: var(--white); padding: 0.75rem 1rem;
+    font-family: 'DM Mono', monospace; font-size: 13px;
+    outline: none; transition: border-color 0.2s; resize: none;
+    border-radius: 0;
+  }
+  .form-input:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-textarea { min-height: 120px; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: var(--muted); letter-spacing: 0.08em;
+  }
+
+  /* ANIMATIONS */
+  .fade-in {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    nav { padding: 1.2rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 7rem 1.5rem 12rem; }
+    .hero-right { display: none; }
+    .hero-stats { left: 1.5rem; right: 1.5rem; gap: 1.5rem; flex-wrap: wrap; }
+    section { padding: 4rem 1.5rem; }
+    .about-grid, .contact-wrap { grid-template-columns: 1fr; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .project-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
+    .services-list { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a href="#" class="nav-logo">A<span>.</span>I</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Work</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero" style="max-width:100%;padding-top:8rem">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-left">
+    <div class="hero-tag">AI Architect</div>
+    <h1>
+      Building<br>
+      <em>Systems</em> that<br>
+      <span class="accent">Think.</span>
+    </h1>
+    <p class="hero-desc">
+      I design and architect intelligent systems — from LLM pipelines and RAG infrastructure to production-grade AI products that actually ship.
+    </p>
+    <div class="hero-ctas">
+      <a href="#projects" class="btn-primary">View my work</a>
+      <a href="#contact" class="btn-ghost">Get in touch</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-visual">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">12<span>+</span></div>
+      <div class="stat-label">AI systems shipped</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">4<span>yrs</span></div>
+      <div class="stat-label">In the field</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">Tokens processed</div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item"><span>◆</span> LLM Architecture</div>
+    <div class="marquee-item"><span>◆</span> RAG Systems</div>
+    <div class="marquee-item"><span>◆</span> AI Product Design</div>
+    <div class="marquee-item"><span>◆</span> Multi-Agent Frameworks</div>
+    <div class="marquee-item"><span>◆</span> Model Fine-tuning</div>
+    <div class="marquee-item"><span>◆</span> Inference Optimization</div>
+    <div class="marquee-item"><span>◆</span> Prompt Engineering</div>
+    <div class="marquee-item"><span>◆</span> Vector Databases</div>
+    <div class="marquee-item"><span>◆</span> LLM Architecture</div>
+    <div class="marquee-item"><span>◆</span> RAG Systems</div>
+    <div class="marquee-item"><span>◆</span> AI Product Design</div>
+    <div class="marquee-item"><span>◆</span> Multi-Agent Frameworks</div>
+    <div class="marquee-item"><span>◆</span> Model Fine-tuning</div>
+    <div class="marquee-item"><span>◆</span> Inference Optimization</div>
+    <div class="marquee-item"><span>◆</span> Prompt Engineering</div>
+    <div class="marquee-item"><span>◆</span> Vector Databases</div>
+  </div>
+</div>
+
+<section id="about">
+  <div class="section-label">About</div>
+  <div class="about-grid fade-in">
+    <div>
+      <h2>Not just a dev.<br>An architect.</h2>
+      <div class="about-body">
+        <p>I work at the intersection of systems thinking and machine intelligence — designing the invisible scaffolding that makes AI products reliable, scalable, and actually useful.</p>
+        <p>My work spans everything from initial architecture decisions and model selection to production deployment, monitoring, and continuous improvement loops.</p>
+        <p>I believe most AI failures are design failures. I'm here to fix that.</p>
+      </div>
+    </div>
+    <div class="about-stack">
+      <div class="stack-title" style="margin-bottom:1.5rem">Core stack</div>
+      <div style="margin-bottom:1.5rem">
+        <div class="stack-title">Models & APIs</div>
+        <div class="stack-items">
+          <span class="tag">GPT-4o</span><span class="tag">Claude 3.5</span><span class="tag">Gemini</span><span class="tag">Llama 3</span><span class="tag">Mistral</span>
+        </div>
+      </div>
+      <div style="margin-bottom:1.5rem">
+        <div class="stack-title">Infrastructure</div>
+        <div class="stack-items">
+          <span class="tag">LangChain</span><span class="tag">LlamaIndex</span><span class="tag">Pinecone</span><span class="tag">Weaviate</span><span class="tag">Redis</span>
+        </div>
+      </div>
+      <div>
+        <div class="stack-title">Languages & tools</div>
+        <div class="stack-items">
+          <span class="tag">Python</span><span class="tag">TypeScript</span><span class="tag">FastAPI</span><span class="tag">Docker</span><span class="tag">AWS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects" style="max-width:100%;padding-left:3rem;padding-right:3rem">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="section-label">Selected work</div>
+    <h2 class="fade-in">Things I've built.</h2>
+    <div class="projects-grid fade-in">
+      <div class="project-card featured">
+        <div>
+          <div class="featured-badge">Featured project</div>
+          <div class="project-name" style="font-size:1.8rem">Enterprise Knowledge OS</div>
+          <div class="project-desc">A multi-tenant RAG architecture powering an internal knowledge base for 4,000+ employees. Reduced search-to-answer time by 70%. Custom chunking strategies, hybrid search, and a citation engine built from scratch.</div>
+          <div class="project-tags">
+            <span class="project-tag">RAG</span>
+            <span class="project-tag">LangChain</span>
+            <span class="project-tag">Pinecone</span>
+            <span class="project-tag">GPT-4</span>
+            <span class="project-tag">FastAPI</span>
+          </div>
+        </div>
+        <div style="border:1px solid var(--border);padding:2rem;font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);line-height:2">
+          <div style="color:var(--accent2);margin-bottom:0.5rem">// system metrics</div>
+          <div>latency_p50 <span style="color:var(--accent)">→</span> 380ms</div>
+          <div>latency_p99 <span style="color:var(--accent)">→</span> 1.2s</div>
+          <div>accuracy <span style="color:var(--accent)">→</span> 94.2%</div>
+          <div>chunks_indexed <span style="color:var(--accent)">→</span> 2.4M</div>
+          <div>daily_queries <span style="color:var(--accent)">→</span> ~18K</div>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-num">02</div>
+        <div class="project-name">Autonomous Code Reviewer</div>
+        <div class="project-desc">Multi-agent system that reviews PRs for security, performance, and style. Integrates with GitHub Actions and posts structured feedback in under 45 seconds.</div>
+        <div class="project-tags">
+          <span class="project-tag">Agents</span><span class="project-tag">Claude</span><span class="project-tag">GitHub API</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-num">03</div>
+        <div class="project-name">Structured Output Engine</div>
+        <div class="project-desc">A reliability layer over LLM APIs that enforces JSON schemas, handles retries, and validates outputs — reducing hallucination-induced failures by 91%.</div>
+        <div class="project-tags">
+          <span class="project-tag">Reliability</span><span class="project-tag">Pydantic</span><span class="project-tag">Python</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-num">04</div>
+        <div class="project-name">Fine-tuned Triage Model</div>
+        <div class="project-desc">Domain-specific fine-tune of Llama 3 for customer support triage. 3× cheaper than GPT-4, 99ms inference, deployed on custom inference cluster.</div>
+        <div class="project-tags">
+          <span class="project-tag">Fine-tuning</span><span class="project-tag">Llama 3</span><span class="project-tag">vLLM</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="section-label">What I do</div>
+  <h2 class="fade-in">Services.</h2>
+  <div class="services-list fade-in">
+    <div class="service">
+      <div class="service-icon">⬡</div>
+      <div class="service-name">AI System Design</div>
+      <div class="service-desc">Architecture reviews, stack selection, and end-to-end system design for AI products that need to scale.</div>
+    </div>
+    <div class="service">
+      <div class="service-icon">⬡</div>
+      <div class="service-name">RAG & Retrieval</div>
+      <div class="service-desc">Custom RAG pipelines, vector store setup, hybrid search, reranking, and evaluation frameworks.</div>
+    </div>
+    <div class="service">
+      <div class="service-icon">⬡</div>
+      <div class="service-name">Agent Frameworks</div>
+      <div class="service-desc">Multi-agent orchestration, tool use, memory systems, and reliable planning loops for autonomous workflows.</div>
+    </div>
+    <div class="service">
+      <div class="service-icon">⬡</div>
+      <div class="service-name">LLM Optimization</div>
+      <div class="service-desc">Latency reduction, cost optimization, fine-tuning strategy, and prompt engineering at scale.</div>
+    </div>
+    <div class="service">
+      <div class="service-icon">⬡</div>
+      <div class="service-name">Production Infra</div>
+      <div class="service-desc">Deployment, monitoring, evals, observability, and safety guardrails for AI in production.</div>
+    </div>
+    <div class="service">
+      <div class="service-icon">⬡</div>
+      <div class="service-name">Advisory</div>
+      <div class="service-desc">Strategic guidance for teams building their first AI product or scaling an existing one.</div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" style="max-width:100%;padding-left:3rem;padding-right:3rem;border-top:1px solid var(--border)">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="contact-wrap fade-in">
+      <div class="contact-left">
+        <div class="section-label">Contact</div>
+        <h2>Let's build<br>something<br><span style="color:var(--accent)">intelligent.</span></h2>
+        <p class="contact-sub">Open to consulting engagements, advisory roles, and ambitious full-time opportunities. If you're shipping serious AI, reach out.</p>
+        <div class="contact-links">
+          <a href="mailto:hello@example.com" class="contact-link">hello@example.com</a>
+          <a href="#" class="contact-link">github.com/username</a>
+          <a href="#" class="contact-link">linkedin.com/in/username</a>
+          <a href="#" class="contact-link">@username on X</a>
+        </div>
+      </div>
+      <div>
+        <div class="contact-form">
+          <div class="form-group">
+            <label class="form-label">Name</label>
+            <input class="form-input" type="text" placeholder="Your name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" type="email" placeholder="your@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message</label>
+            <textarea class="form-textarea" placeholder="Tell me about your project..."></textarea>
+          </div>
+          <button class="btn-primary" style="align-self:flex-start;cursor:none" onclick="this.textContent='Sent ✓';this.style.background='var(--accent2)'">Send message</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 — AI Architect Portfolio</span>
+  <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.9rem">A<span style="color:var(--accent)">.</span>I</span>
+  <span>Built with intention.</span>
+</footer>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx+'px'; cursor.style.top = my+'px'; });
+  function animRing() { rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12; ring.style.left = Math.round(rx)+'px'; ring.style.top = Math.round(ry)+'px'; requestAnimationFrame(animRing); }
+  animRing();
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
